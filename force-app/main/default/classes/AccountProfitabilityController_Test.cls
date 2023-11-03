@@ -4,7 +4,7 @@ public class AccountProfitabilityController_Test {
     static testMethod void forecast() {
         //insert new Transaction__c(transactionID__c = 1);
         Id recordTypeId_accBP = Schema.SObjectType.Account.getRecordTypeInfosByName().get('BP').getRecordTypeId();
-
+        system.debug('recordTypeId_accBP: ' + recordTypeId_accBP);
         Id recordTypeId_ProfitabilityNonGsm = Schema.SObjectType.Profitability__c.getRecordTypeInfosByName().get('NON GSM').getRecordTypeId();
 
         Profile pf= [Select Id from profile where Name='System Administrator']; 
