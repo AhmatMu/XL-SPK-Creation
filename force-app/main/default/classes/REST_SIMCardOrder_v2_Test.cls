@@ -1,0 +1,232 @@
+/**
+ * @description       : 
+ * @author            : Novando Utoyo Agmawan
+ * @group             : 
+ * @last modified on  : 01-27-2023
+ * @last modified by  : Novando Utoyo Agmawan
+ * Modifications Log
+ * Ver   Date         Author                  Modification
+ * 1.0   01-05-2023   Novando Utoyo Agmawan   Initial Version
+**/
+
+@isTest
+public class REST_SIMCardOrder_v2_Test {
+    static testmethod void CRUD1(){
+        List<Easy_Ops_API_Setting__c> List_EasyOpsAPISetting = new List<Easy_Ops_API_Setting__c>();
+
+        Easy_Ops_API_Setting__c EasyOpsAPISetting1 = new Easy_Ops_API_Setting__c();
+        EasyOpsAPISetting1.Name = 'getToken';
+        EasyOpsAPISetting1.Username__c = 'apidemo';
+        EasyOpsAPISetting1.Password__c = 'Password*1';
+        EasyOpsAPISetting1.URI__c = 'https://easy-ops.xl.co.id/dev/api';
+        EasyOpsAPISetting1.URL__c = '/auth/token';
+        List_EasyOpsAPISetting.add(EasyOpsAPISetting1);
+
+        Easy_Ops_API_Setting__c EasyOpsAPISetting2 = new Easy_Ops_API_Setting__c();
+        EasyOpsAPISetting2.Name = 'CreateSodo';
+        EasyOpsAPISetting2.Username__c = '';
+        EasyOpsAPISetting2.Password__c = '';
+        EasyOpsAPISetting2.URI__c = 'https://easy-ops.xl.co.id/dev/api';
+        EasyOpsAPISetting2.URL__c = '/sales_order/create';
+        List_EasyOpsAPISetting.add(EasyOpsAPISetting2);
+
+        insert List_EasyOpsAPISetting;
+
+        insert new Transaction__c(transactionID__c = 1);
+
+        Id accountRecordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByName().get('BP').getRecordTypeId();
+        Account acc = new Account();
+        acc.RecordTypeId = accountRecordTypeId;
+        acc.Name = 'TEST';
+        acc.Unique_Name__c = 'TEST';
+        acc.NumberOfEmployees = 2;
+        acc.Company_Group__c = 'Perusahaan Asing';
+        acc.Customer_VAT_Name__c = 'sdfskdjfsjdf';
+        acc.Customer_Type__c = 'NONGSM';
+        acc.No_NPWP__c = 'ojsnonjsdf';
+        acc.BillingStreet = 'hive';
+        acc.BillingState = 'hive';
+        acc.BillingCity = 'hive';
+        acc.BillingCountry = 'hive';
+        acc.BillingPostalCode = 'hive';
+        acc.ShippingStreet = 'hive';
+        acc.ShippingState = 'hive';
+        acc.ShippingCity = 'hive';
+        acc.ShippingCountry = 'hive';
+        acc.ShippingPostalCode = 'hive';
+        acc.Billing_Building_Name__c = 'hive';
+        acc.Shipping_Building_Name__c = 'hive';
+        acc.Field_Source__c = 'Bizstore Customer Registration';
+        acc.Organization_Type__c = 'Head Office';
+        acc.Type = 'Customer';
+        acc.term_of_payment__c = 'Z030 Within 30 Days Due Net';
+        acc.OU__c = '1';
+        acc.Industry = 'Agriculture';
+        acc.BP_Number__c = '1xx12';
+        acc.Bizstore_Complete__c = false;
+        Insert acc;
+
+        Id accountRecordTypeId_dealer = Schema.SObjectType.Account.getRecordTypeInfosByName().get('Dealer').getRecordTypeId();
+
+        Account accountDealer1 = new Account(
+            Name = 'Account Dealer 1',
+            RecordTypeId = accountRecordTypeId_dealer,
+            ParentId = acc.Id,
+            DealerID__c = '90185647',
+            Organization_Type__c = 'Branch',
+            Dealer_Status__c = 'Active',
+            Customer_Class__c = '5',
+            Sent_to_ERP__c = false,
+            Cost_Center__c = 'COSA001',
+            Phone = '62817123456',
+            Channel_Category__c = '11',
+            //SLOC__c = 'undefined',
+            Channel_Type__c = '11',
+            Dealer_VAT_Type__c = 'Company',
+            Channel_Sub_Type__c = '1',
+            Dealer_VAT_Name__c = 'CV Berkah Bersama 1',
+            Distributor_Type__c = '11',
+            No_NPWP__c = '9876543212345678',
+            NPWP_Expired_Date__c = system.today(),
+            Street_IdexPro__c = 'Jl. Kalibaru Timur, Arjawinangun, Kec. Arjawinangun, Kabupaten Cirebon, Jawa Barat 45162',
+            //Province_IdexPro__c = 'undefined',
+            //City_IdexPro__c = 'undefined',
+            //District_IdexPro__c = 'undefined',
+            Postal_Code_IdexPro__c = '1200',
+            Idexpro_BillingAddressId__c = '4134931',
+            Idexpro_ShippingAddressId__c = '4134930', 
+            Update_Dealer_IdexPro_Status__c = 'On Progress',
+            DataSource__c = 'Salesforce Input Form'
+        );
+        insert accountDealer1;
+
+        Contact ContacReq = new Contact();
+        ContacReq.LastName = 'Wiryo';
+        ContacReq.Accountid = acc.id;
+        ContacReq.Firstname = 'Yohn';
+        ContacReq.MobilePhone = '0288282';
+        ContacReq.Email = 'Fail@fail.com';
+        insert ContacReq;
+
+        AccountContactRelation CR = new AccountContactRelation();
+        CR.AccountID = accountDealer1.id;
+        CR.Contactid = ContacReq.id;
+        CR.Roles='Contact Person';
+        insert CR;
+
+        Pricebook2 PB_GSMMaterialGeneral = new Pricebook2(
+            Name='GSM-Material General',
+            Service_group__c='GSM',
+            GSM_Type__c = 'Material',
+            IsActive=true
+        );
+        insert PB_GSMMaterialGeneral;
+		
+        Product2 pro2 = new Product2(
+            Name = 'SP0KJIT-JKT',
+            isActive = true,
+            SIM_Type__c = 'Reg - Prepaid',
+            Product_Code2__c = 'Prepaid',
+            ProductCode = 'Prepaid',
+            Revenue_Type__c = 'One Time',
+            Family = 'Material'
+        );
+        insert pro2;
+
+        PricebookEntry pbEntrySTDREC = new PricebookEntry(
+            Product2Id = pro2.id,  // Product
+            IsActive = true,                   // Active
+            Pricebook2Id = Test.getStandardPricebookId(),  // Price Book
+            UnitPrice = 52.500,                // List Price
+            UseStandardPrice = false          // Use Standard Price
+        );
+        insert pbEntrySTDREC;
+        
+        PricebookEntry PBE_GSMMaterialGeneral = new PricebookEntry(
+            Product2Id = pro2.id,  // Product
+            IsActive = true,                   // Active
+            Pricebook2Id = PB_GSMMaterialGeneral.id,  // Price Book
+            UnitPrice = 12.500,                // List Price
+            UseStandardPrice = false          // Use Standard Price
+        );
+        insert PBE_GSMMaterialGeneral;
+
+        SLOC__c S=new SLOC__c();
+        S.Name='Tes';
+        S.Sloc_id__c='123';
+        insert S;
+
+        Id orderRecordTypeId_GSMSIMCard = Schema.SObjectType.Order.getRecordTypeInfosByName().get('GSM SIM Card').getRecordTypeId();
+
+        Order orderRec = New Order();
+        orderRec.AccountID = acc.id;
+        orderRec.Status = 'Draft';
+        orderRec.SLOC__c = S.id;
+        orderRec.recordtypeid = orderRecordTypeId_GSMSIMCard;
+        orderRec.Pricebook2id = PB_GSMMaterialGeneral.id;
+        orderRec.EffectiveDate = system.today();
+        orderRec.SIMCard_Order_Payment_Type__c = 'FREE';
+        orderRec.Payment_Date__c = system.today();
+        insert orderRec;
+
+        orderRec.Pricebook2id = PB_GSMMaterialGeneral.id;
+        update orderRec;
+
+        OrderItem plcLineItem = new OrderItem(
+            OrderId = orderRec.id, 
+            Product2id = pro2.id,
+            PricebookEntryId = PBE_GSMMaterialGeneral.id,
+            Quantity = 1, 
+            UnitPrice = 300);
+        insert plcLineItem;
+
+        Test.startTest();
+        SingleRequestMock getToken = new SingleRequestMock(
+            200,
+            'success',
+            '{"token":"eyJraWQiOiJlNzRlMDc2Mi01MmMxLTRjMGEtYmFlMC03ZTR"}',
+            null
+        );
+
+        SingleRequestMock sapCreateSodo = new SingleRequestMock(
+            200,
+            'success',
+            '{"success":true,"status":200,"message":"Record has been saved","data":{"poNo":"1234555","soNo":"1233","invoiceNo":"12333","poDate":"2022-09-04 16:59:25"}}',
+            null
+        );
+
+        Map<String, HttpCalloutMock> endpoint2TestResp = new Map<String,HttpCalloutMock>();
+
+        endpoint2TestResp.put(EasyOpsAPISetting1.URI__c + EasyOpsAPISetting1.URL__c, getToken) ; 
+        endpoint2TestResp.put(EasyOpsAPISetting2.URI__c + EasyOpsAPISetting2.URL__c, sapCreateSodo); 
+        
+        HttpCalloutMock multiCalloutMock = new MultiRequestMock(endpoint2TestResp);
+        
+        Test.setMock(HttpCalloutMock.class, multiCalloutMock);
+
+        REST_SIMCardOrder_v3.addSimCardOrder(orderRec.id);
+
+        Order orderRec2 = [select id , order_id__c from Order where id =: orderRec.id];
+
+        RestRequest restRequest = new RestRequest();
+        restRequest.requestURI = 'https://test.salesforce.com/services/apexrest/simcardorders';
+        restRequest.httpMethod = 'PUT';
+        restRequest.remoteAddress = '111.111.1.111';
+
+        restRequest.requestBody = Blob.valueof('{"header":{"service":"updatesimcardorder","request_id":"650000000146"},"body":{"data":{"order_no":"'+orderRec2.order_id__c +'","stage":"Ready for Pickup","msisdn_list":[{"label":"","iccid":"8962115331282820822","msisdn":"6287885020103"},{"label":"","iccid":"8962115331282820830","msisdn":"6287885020104"},{"label":"","iccid":"8962115331282820848","msisdn":"6287885020105"},{"label":"","iccid":"8962115331282820855","msisdn":"6287885020106"},{"label":"","iccid":"8962115331282820863","msisdn":"6287885020107"},{"label":"","iccid":"8962115331282820871","msisdn":"6287885020108"},{"label":"","iccid":"8962115331282820871","msisdn":"6287885020109"},{"label":"","iccid":"8962115331282820707","msisdn":"6287885010091"},{"label":"","iccid":"8962115331282820699","msisdn":"6287885010090"},{"label":"","iccid":"8962115331282820715","msisdn":"6287885010092"}]}}}');
+        RestContext.request = restRequest;
+
+        REST_SIMCardOrder_v3.doput();
+
+        restRequest.requestBody = Blob.valueof('{"header":{"service":"updatesimcardorder","request_id":"657878986879"},"body":{"data":{"order_no":"'+orderRec2.order_id__c+'","stage":"Complete","notes":"keterangan ...","pic_pickup":"Faris trala"}}}');
+        RestContext.request = restRequest;
+
+        REST_SIMCardOrder_v3.doput();
+
+        REST_SIMCardOrder_v2_Schdler class_REST_SIMCardOrder_v2_Schdler = new REST_SIMCardOrder_v2_Schdler(orderRec.id); 
+        String nextFireTime = '0 0 23 * * ?'; 
+        System.schedule('class_REST_SIMCardOrder_v2_Schdler ' + String.valueOf(system.now()), nextFireTime, class_REST_SIMCardOrder_v2_Schdler);
+
+        Test.stopTest();
+    }
+}
